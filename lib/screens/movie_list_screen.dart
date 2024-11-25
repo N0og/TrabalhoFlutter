@@ -24,6 +24,52 @@ class _MovieListScreenState extends State<MovieListScreen> {
     });
   }
 
+  void _showOptions(BuildContext context, Movie movie) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('Exibir Dados'),
+                onTap: () {
+                  Navigator.pop(context); // Fecha o menu
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailScreen(movie: movie),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('Alterar'),
+                onTap: () async {
+                  Navigator.pop(context); // Fecha o menu
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MovieFormScreen(movie: movie),
+                    ),
+                  );
+                  if (result == true) _refreshMovies();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +84,8 @@ class _MovieListScreenState extends State<MovieListScreen> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text('Equipe:'),
-                    content: Text('Vitor Weslley Araujo De Medeiros'),
+                    content: Text(
+                        'Vitor Weslley Araujo De Medeiros\nGabriel da Silva Nogueira'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -50,36 +97,6 @@ class _MovieListScreenState extends State<MovieListScreen> {
                   );
                 },
               );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () async {
-              // Exibe o alerta com o nome do grupo antes de abrir a tela de cadastro
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Equipe:'),
-                    content: Text('Vitor Weslley Araujo De Medeiros'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Ok'),
-                      ),
-                    ],
-                  );
-                },
-              );
-
-              // Após fechar o alerta, abre a tela de cadastro
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MovieFormScreen()),
-              );
-              if (result == true) _refreshMovies();
             },
           ),
         ],
@@ -173,13 +190,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
                           ],
                         ),
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MovieDetailScreen(movie: movie),
-                            ),
-                          );
+                          _showOptions(context, movie);
                         },
                       ),
                     ),

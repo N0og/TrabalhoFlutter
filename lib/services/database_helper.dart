@@ -51,4 +51,15 @@ class DatabaseHelper {
     final db = await instance.database;
     return await db.delete('movies', where: 'id = ?', whereArgs: [id]);
   }
+
+  // Método para atualizar um filme existente
+  Future<int> updateMovie(Movie movie) async {
+    final db = await instance.database;
+    return await db.update(
+      'movies',
+      movie.toMap(),
+      where: 'id = ?',
+      whereArgs: [movie.id],
+    );
+  }
 }
